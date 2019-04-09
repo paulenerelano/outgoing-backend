@@ -3,23 +3,19 @@ const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const PORT = process.env.PORT;
+const outgoingRoutes = express.Router();
+const PORT = 4000;
+
+let Outgoing = require('./outgoing.model');
 
 app.use(cors());
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb://127.0.0.1:27017/db_outgoing', { useNewUrlParser: true });
+mongoose.connect('mongodb://127.0.0.1:27017/outgoing', { useNewUrlParser: true });
 const connection = mongoose.connection;
-connection.once('open', function() {
-    console.log("MongoDB database (db_outgoing) connection established successfully");
-})
-
-app.listen(PORT, () => {
-    console.log("Outgoing server listening on port " + PORT);
+connection.once('open', function () {
+  console.log("MongoDB database (outgoing) connection established successfully");
 });
-
-const outgoingRoutes = express.Router();
-app.use('/db_outgoing', outgoingRoutes);
 
 outgoingRoutes.route('/').get(function (req, res) {
     Outgoing.find(function (err, outgoing) {
@@ -62,4 +58,9 @@ outgoingRoutes.route('/update/:id').post(function (req, res) {
                     res.status(400).send("Update not possible");
                 });
     });
+});
+
+app.use('/outgoing', outgoingRoutes);
+app.listen(PORT, function () {
+  console.log("Server is running on Port: " + PORT);
 });
