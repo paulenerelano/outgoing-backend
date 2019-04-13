@@ -1,66 +1,47 @@
-const express = require('express');
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const express = require("express");
+const dbConfig = require("./db/dbconfig.js");
+
 const app = express();
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const mongoose = require('mongoose');
-const outgoingRoutes = express.Router();
-const PORT = 4000;
+const port = 4000;
 
-let Outgoing = require('./outgoing.model');
-
+/* Configure Express App */
 app.use(cors());
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb://127.0.0.1:27017/outgoing', { useNewUrlParser: true });
-const connection = mongoose.connection;
-connection.once('open', function () {
-  console.log("MongoDB database (outgoing) connection established successfully");
+/* Routes */
+app.use("/event", dbConfig.Route.Event);
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  console.log("[DEBUG] ERROR 404");
+  const err = new Error('Not Found');
+  err.status = 404;
+  next(err);
 });
 
-outgoingRoutes.route('/').get(function (req, res) {
-    Outgoing.find(function (err, outgoing) {
-        if (err) {
-            console.log(err);
-        } else {
-            res.json(outgoing);
-        }
-    });
+// error handler
+app.use(function(err, req, res, next) {
+  console.log("[DEBUG] ERROR 500");
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  // render the error page
+  res.status(err.status || 500);
+  res.json({
+    message: err.message,
+    error: err
+  });
+  return;
 });
 
-outgoingRoutes.route('/:id').get(function (req, res) {
-    let id = req.params.id;
-    Outgoing.findById(id, function (err, outgoing) {
-        res.json(outgoing);
-    });
-});
+/* Connect DB */
+dbConfig.DB.dbConnect();
 
-outgoingRoutes.route('/add').post(function (req, res) {
-    let outgoing = new Outgoing(req.body);
-    outgoing.save()
-        .then(todo => {
-            res.status(200).json({ 'outgoing': 'outgoing added successfully' });
-        })
-        .catch(err => {
-            res.status(400).send('adding new outgoing failed');
-        });
-});
-
-outgoingRoutes.route('/update/:id').post(function (req, res) {
-    Outgoing.findById(req.params.id, function (err, outgoing) {
-        if (!outgoing)
-            res.status(404).send("data is not found");
-        else
-            // TODO: Update outgoing details here
-            outgoing.save().then(outgoing => {
-                res.json('Outgoing updated!');
-            })
-                .catch(err => {
-                    res.status(400).send("Update not possible");
-                });
-    });
-});
-
-app.use('/outgoing', outgoingRoutes);
-app.listen(PORT, function () {
-  console.log("Server is running on Port: " + PORT);
+/* Listen to port */
+app.listen(port, function() {
+  console.log("Server is running on Port:", port);
 });
