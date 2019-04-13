@@ -4,7 +4,8 @@ const express = require("express");
 const dbConfig = require("./db/dbconfig.js");
 
 const app = express();
-const port = 4000;
+/*const port = 4000;*/
+const port = process.env.PORT;
 
 /* Configure Express App */
 app.use(cors());
