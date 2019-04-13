@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 
 /* Online MongoDB */
-const DB_PATH_ = "mongodb+srv://kpalevino:snoopy1115@cluster0-myuxv.mongodb.net/outgoing_db"
+const DB_PATH = "mongodb+srv://kpalevino:snoopy1115@cluster0-myuxv.mongodb.net/outgoing_db"
 
 /* Local MongoDB */
-const DB_PATH = "mongodb://localhost:27017/outgoing_db";
+const DB_PATH_ = "mongodb://localhost:27017/outgoing_db";
 
 module.exports = function() {
   return {
