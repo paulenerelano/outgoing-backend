@@ -1,11 +1,11 @@
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const express = require("express");
-const dbConfig = require("./db/dbconfig.js");
+const app = require("express")();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+const dbConfig = require("./db/dbconfig")(io);
 
-const app = express();
-/*const port = 4000;*/
-const port = process.env.PORT;
+const port = 4000;
 
 /* Configure Express App */
 app.use(cors());
@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 /* Routes */
-app.use("/event", dbConfig.Route.Event);
+app.use("/events", dbConfig.Route.Event);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -43,6 +43,6 @@ app.use(function(err, req, res, next) {
 dbConfig.DB.dbConnect();
 
 /* Listen to port */
-app.listen(port, function() {
+http.listen(port, function() {
   console.log("Server is running on Port:", port);
 });

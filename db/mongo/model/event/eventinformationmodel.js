@@ -16,7 +16,17 @@ let EventInformation = new Schema(
     },
 
     location: {
-      type: String
+      loc_name: {
+        type: String
+      },
+      loc_coor: {
+        lat: {
+          type: String
+        },
+        long: {
+          type: String
+        },
+      }
     },
 
     startdate: {

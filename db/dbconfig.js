@@ -5,9 +5,11 @@ const dbMongo = require("./mongo/dbmongo.js")();
 const eventRoute = require("./route/eventroute");
 
 /* Exports */
-module.exports = {
-  DB: dbMongo,
-  Route: {
-    Event: eventRoute,
-  },
+module.exports = function(io){
+    return {
+        DB: dbMongo,
+        Route: {
+            Event: eventRoute(io),
+        },
+    }
 }
