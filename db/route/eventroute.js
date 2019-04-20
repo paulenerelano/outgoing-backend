@@ -19,7 +19,7 @@ eventRoute.route('/list').get(function(req, res) {
   });
 });
 
-eventRoute.route('/:id').get(function(req, res) {
+eventRoute.route('/details/:id').get(function(req, res) {
   let id = req.params.id;
   eventInformation.findById(id, function(err, event) {
       res.json(event);
